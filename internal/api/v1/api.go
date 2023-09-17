@@ -11,11 +11,11 @@ type IApiV1 interface {
 }
 
 type ApiV1 struct {
-	files.IFileApi // 文件api
-	users.IUserApi //用户api
+	files.IFileApi //File API
+	users.IUserApi //User API
 }
 
-// LaunchOnline ApiV1 启动上线的方法
+// LaunchOnline ApiV1 Initiation of go-live methods
 func (ApiV1 *ApiV1) LaunchOnline(engine *gin.Engine) {
 	file := engine.Group(ApiV1.IFileApi.SetPrefix())
 	{
@@ -27,7 +27,7 @@ func (ApiV1 *ApiV1) LaunchOnline(engine *gin.Engine) {
 	}
 }
 
-// NewApiV1 api v1 接口初始化 内部初始化对应的模块构造代码
+// NewApiV1 api v1 Interface initialization Internal initialization corresponds to the module construction code
 func NewApiV1() IApiV1 {
 	return &ApiV1{
 		IFileApi: files.NewFilesApi(),

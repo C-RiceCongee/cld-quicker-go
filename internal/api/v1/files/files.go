@@ -14,7 +14,6 @@ type IFileApi interface {
 type FileApi struct {
 }
 
-// SetPrefix  设置当前路由模块的引擎前缀
 func (f *FileApi) SetPrefix() string {
 	return "/api/v1/files"
 }
