@@ -3,6 +3,7 @@ package main
 import (
 	"cld-quicker/database/mysql"
 	redisIns "cld-quicker/database/redis"
+	"cld-quicker/internal/engine"
 	"cld-quicker/pkg"
 	"github.com/go-redis/redis"
 	"go.uber.org/zap"
@@ -65,4 +66,5 @@ func runApp() {
 		zap.L().Fatal(err.Error())
 	}
 	log.Println("Snowflake Ready !")
+	engine.CreateServer()
 }

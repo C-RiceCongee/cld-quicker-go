@@ -16,7 +16,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"cld-quicker/internal/model/internal/model/models"
+	"cld-quicker/internal/model/model/models"
 )
 
 func newFile(db *gorm.DB, opts ...gen.DOOption) file {

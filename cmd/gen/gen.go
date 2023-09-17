@@ -11,8 +11,8 @@ import (
 
 func Gen(db *gorm.DB) {
 	g := gen.NewGenerator(gen.Config{
-		OutPath:      "./internal/model/dal",
-		ModelPkgPath: "./internal/model/models",
+		OutPath:      "internal/model/dal",
+		ModelPkgPath: "model/models",
 		OutFile:      "",
 		Mode:         gen.WithoutContext | gen.WithDefaultQuery,
 	})
