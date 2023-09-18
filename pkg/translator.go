@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"cld-quicker/com"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -86,7 +87,8 @@ ErrorValidator 处理json映射到参数校验的错误处理！
 判断是validator异常还是其他异常
 */
 func ErrorValidator(context *gin.Context, err error) {
-	errs, assertOk := err.(validator.ValidationErrors)
+	var errs validator.ValidationErrors
+	assertOk := errors.As(err, &errs)
 	if !assertOk {
 		/*
 			! assert_ok 表示断言失败！非validator.ValidationErrors类型错误直接返回
