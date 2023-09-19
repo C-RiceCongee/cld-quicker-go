@@ -2,36 +2,24 @@ package pkg
 
 import "C"
 import (
-	"fmt"
+	"sync"
+
 	"github.com/gocolly/colly/v2"
 )
 
 type CLDColly struct {
 	url  string
-	c    *colly.Collector
+	C    *colly.Collector
 	HTML chan *colly.HTMLElement
+	Lock sync.WaitGroup
 }
 
-func (cld *CLDColly) DoVisit() error {
-	return cld.c.Visit(cld.url)
+func (c *CLDColly) Do() error {
+	return c.C.Visit(c.url)
 }
-
-func (cld *CLDColly) OnHTML(tag string, attr string) {
-	cld.c.OnHTML(tag, func(e *colly.HTMLElement) {
-		cld.HTML <- e
-	})
-}
-
-func (cld *CLDColly) OnRequest() {
-	cld.c.OnRequest(func(r *colly.Request) {
-		fmt.Print(r.URL)
-	})
-}
-
-func NewColly(url string) *CLDColly {
+func NewCLDColly(url string) *CLDColly {
 	return &CLDColly{
-		url:  url,
-		c:    colly.NewCollector(),
-		HTML: make(chan *colly.HTMLElement, 10),
+		url: url,
+		C:   colly.NewCollector(),
 	}
 }
