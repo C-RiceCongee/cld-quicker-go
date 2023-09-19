@@ -21,11 +21,11 @@ log:
   compress: true
   local_time: true
 mysql:
-  host: 127.0.0.1
+  host: 114.132.251.2
   port: 18888
   username: root
   password: CnrZ3wG5vxLzkzm
-  db_name: cldquicker
+  db_name: foods
   charset: utf8mb4
   parse_time: true
   max_open_connes: 200 # 用于设置最大打开的连接数，默认值为0表示不限制。
