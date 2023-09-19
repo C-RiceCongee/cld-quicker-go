@@ -2,7 +2,9 @@ package foods
 
 import (
 	"cld-quicker-go/pkg"
+	"fmt"
 	"github.com/gocolly/colly/v2"
+	"strings"
 )
 
 type CommonFood struct {
@@ -42,8 +44,51 @@ func GetCommonFoodsLogic() ([]*CommonFood, error) {
 	return CommonFoodsList, nil
 }
 
+type FoodSearchResItem struct {
+	Title string `json:"title"`
+	Brand string `json:"brand"`
+	Link  string `json:"link"`
+	Desc  string `json:"desc"`
+}
+
 // SearchFoodLogic 搜索食物
-func SearchFoodLogic(foodsName string) {
-	// url = fmt.Sprintf("%v%s", SearchFoods, foodsName)
-	//cldC := pkg.NewCLDColly()
+func SearchFoodLogic(foodsName string) ([]*FoodSearchResItem, error) {
+	FoodSearchResItemList := make([]*FoodSearchResItem, 0)
+	aimURL := fmt.Sprintf("%s%s", SearchFoods, pkg.URIEncoder([]string{"q",
+		foodsName, "pg", "0"}))
+	cldC := pkg.NewCLDColly(aimURL)
+	cldC.C.OnHTML("td.borderBottom", func(element *colly.HTMLElement) {
+		var SearchItem = new(FoodSearchResItem)
+		aProminent := element.DOM.Find("a.prominent")
+		// 寻找a标签
+		if aProminent != nil {
+			SearchItem.Title = aProminent.Text()
+			if val, exists := aProminent.Attr("href"); exists {
+				SearchItem.Link = val
+			}
+		}
+		aBrand := element.DOM.Find("a.brand")
+		if aBrand != nil {
+			SearchItem.Brand = aBrand.Text()
+		}
+		divSmallText := element.DOM.Find("div.smallText")
+		if divSmallText != nil {
+			smallText := strings.TrimSpace(divSmallText.Text())
+			smallTextArr := strings.Split(smallText, "\n")
+			smallTextArrNew := make([]string, 0)
+			for i := 0; i < len(smallTextArr); i++ {
+				if len(strings.TrimSpace(smallTextArr[i])) > 0 {
+					smallTextArrNew = append(smallTextArrNew, strings.TrimSpace(smallTextArr[i]))
+				}
+			}
+			//fmt.Println(smallTextArrNew[0])
+			SearchItem.Desc = smallTextArrNew[0]
+			FoodSearchResItemList = append(FoodSearchResItemList, SearchItem)
+		}
+	})
+	err := cldC.Do()
+	if err != nil {
+		return FoodSearchResItemList, err
+	}
+	return FoodSearchResItemList, err
 }

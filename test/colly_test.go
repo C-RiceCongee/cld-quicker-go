@@ -5,6 +5,8 @@ import (
 	"cld-quicker-go/pkg"
 	"fmt"
 	"log"
+	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/gocolly/colly/v2"
@@ -17,8 +19,8 @@ func Test_Colly_HTML(t *testing.T) {
 		Title string `json:"title"`
 		Link  string `json:"link"`
 	}
-	const url = "https://www.fatsecret.cn/%E7%83%AD%E9%87%8F%E8%90%A5%E5%85%BB/"
-	cldC := pkg.NewCLDColly(url)
+	const aimURL = "https://www.fatsecret.cn/%E7%83%AD%E9%87%8F%E8%90%A5%E5%85%BB/"
+	cldC := pkg.NewCLDColly(aimURL)
 	var CommonFoodsList []*CommonFood
 
 	// 每次匹配到都会执行
@@ -46,18 +48,37 @@ func Test_Colly_HTML(t *testing.T) {
 		log.Fatal(err)
 	}
 }
-
+func TestChineseToUTF(t *testing.T) {
+	str := "酱香饼"
+	values := url.Values{}
+	values.Add("q", str)
+	encode := values.Encode()
+	fmt.Println(encode)
+}
 func TestCollySearchFoodHTML(t *testing.T) {
-	url := fmt.Sprintf("%s%s&pg=%v", foods.SearchFoods, "麦当劳", 0)
-	fmt.Println(url)
-	cldC := pkg.NewCLDColly(url)
+	aimURL := fmt.Sprintf("%s%s", foods.SearchFoods, pkg.URIEncoder([]string{"q",
+		"焦糖瓜子", "pg", "0"}))
+	cldC := pkg.NewCLDColly(aimURL)
 	cldC.C.OnHTML("td.borderBottom", func(element *colly.HTMLElement) {
-		find := element.DOM.Find("a")
+		aProminent := element.DOM.Find("a.prominent")
 		// 寻找a标签
-		if find != nil {
-			if val, exists := find.Attr("href"); exists {
+		if aProminent != nil {
+			fmt.Println(aProminent.Text())
+			if val, exists := aProminent.Attr("href"); exists {
 				fmt.Println(val)
 			}
+		}
+		divSmallText := element.DOM.Find("div.smallText")
+		if divSmallText != nil {
+			smallText := strings.TrimSpace(divSmallText.Text())
+			smallTextArr := strings.Split(smallText, "\n")
+			smallTextArrNew := make([]string, 0)
+			for i := 0; i < len(smallTextArr); i++ {
+				if len(strings.TrimSpace(smallTextArr[i])) > 0 {
+					smallTextArrNew = append(smallTextArrNew, strings.TrimSpace(smallTextArr[i]))
+				}
+			}
+			fmt.Println(smallTextArrNew[0])
 		}
 	})
 	err := cldC.Do()

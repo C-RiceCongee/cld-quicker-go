@@ -2,6 +2,7 @@ package pkg
 
 import (
 	"go.uber.org/zap"
+	"net/url"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -48,4 +49,17 @@ func StructToMap(obj interface{}) map[string]interface{} {
 	}
 
 	return result
+}
+
+// ChineseTransToUnicode 中文转unicode
+func ChineseTransToUnicode(chinese string) string {
+	textQuoted := strconv.QuoteToASCII(chinese)
+	return textQuoted[1 : len(textQuoted)-1]
+}
+func URIEncoder(params []string) string {
+	values := url.Values{}
+	for i := 0; i < len(params); i += 2 {
+		values.Add(params[i], params[i+1])
+	}
+	return values.Encode()
 }
